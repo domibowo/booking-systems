@@ -42,19 +42,55 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.authResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_auth.authResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "invalid email or password",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -84,13 +120,40 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "no content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -124,19 +187,55 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.authResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_auth.authResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "invalid or expired refresh token",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -170,19 +269,55 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.authResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_auth.authResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "409": {
                         "description": "email already registered",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -217,7 +352,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.businessListResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.businessListResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -254,25 +401,73 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -300,19 +495,55 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -356,31 +587,91 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.businessResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -392,6 +683,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Cascades to delete its resources and services. Only the owner or a superadmin may delete it.",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "businesses"
                 ],
@@ -406,31 +700,94 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "no content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -472,7 +829,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.resourceListResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.resourceListResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -516,31 +885,91 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -560,7 +989,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_health.statusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -580,13 +1021,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_health.statusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -614,19 +1079,55 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -670,31 +1171,91 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.resourceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -706,6 +1267,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Cascades to delete its services. Requires ownership of the parent business (or superadmin).",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "resources"
                 ],
@@ -720,31 +1284,94 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "no content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -786,7 +1413,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.serviceListResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.serviceListResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -830,31 +1469,91 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -882,19 +1581,55 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -938,31 +1673,91 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_catalog.serviceResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -974,6 +1769,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Requires ownership of the parent business (or superadmin).",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "services"
                 ],
@@ -988,31 +1786,94 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "no content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1020,11 +1881,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse": {
+        "github_com_domibowo_booking-systems_internal_platform_httpserver.Response": {
             "type": "object",
             "properties": {
-                "error": {
-                    "type": "string"
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
                 }
             }
         },
@@ -1114,7 +1981,7 @@ const docTemplate = `{
         "internal_catalog.businessListResponse": {
             "type": "object",
             "properties": {
-                "data": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/internal_catalog.businessResponse"
@@ -1181,7 +2048,7 @@ const docTemplate = `{
         "internal_catalog.resourceListResponse": {
             "type": "object",
             "properties": {
-                "data": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/internal_catalog.resourceResponse"
@@ -1242,7 +2109,7 @@ const docTemplate = `{
         "internal_catalog.serviceListResponse": {
             "type": "object",
             "properties": {
-                "data": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/internal_catalog.serviceResponse"
@@ -1313,15 +2180,6 @@ const docTemplate = `{
                 },
                 "resource_id": {
                     "type": "string"
-                }
-            }
-        },
-        "internal_health.statusResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "ok"
                 }
             }
         }

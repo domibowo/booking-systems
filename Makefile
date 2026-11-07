@@ -1,10 +1,15 @@
-.PHONY: run build test tidy db-up db-down db-logs
+.PHONY: run build test tidy db-up db-down db-logs swagger
 
-run:
+run: swagger
 	go run ./cmd/api
 
-build:
+build: swagger
 	go build -o bin/api ./cmd/api
+
+# Regenerates docs/ from the @-annotations on handlers. Uses `go run` (not a
+# globally installed swag binary) so the tool version stays pinned to go.mod.
+swagger:
+	go run github.com/swaggo/swag/cmd/swag init -g cmd/api/main.go --output docs --parseDependency --parseInternal
 
 test:
 	go test ./...

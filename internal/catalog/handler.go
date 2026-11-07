@@ -58,7 +58,7 @@ func isSuperadmin(c *gin.Context) bool {
 func parseUUIDParam(c *gin.Context, name string) (uuid.UUID, bool) {
 	id, err := uuid.Parse(c.Param(name))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: "invalid " + name})
+		httpserver.JSON(c, http.StatusBadRequest, "invalid "+name, nil)
 		return uuid.Nil, false
 	}
 	return id, true
@@ -67,11 +67,11 @@ func parseUUIDParam(c *gin.Context, name string) (uuid.UUID, bool) {
 func handleCatalogError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, ErrBusinessNotFound), errors.Is(err, ErrResourceNotFound), errors.Is(err, ErrServiceNotFound):
-		c.JSON(http.StatusNotFound, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusNotFound, err.Error(), nil)
 	case errors.Is(err, ErrForbidden):
-		c.JSON(http.StatusForbidden, httpserver.ErrorResponse{Error: "you do not own this business"})
+		httpserver.JSON(c, http.StatusForbidden, "you do not own this business", nil)
 	default:
-		c.JSON(http.StatusInternalServerError, httpserver.ErrorResponse{Error: "internal error"})
+		httpserver.JSON(c, http.StatusInternalServerError, "internal error", nil)
 	}
 }
 
@@ -94,7 +94,7 @@ type businessResponse struct {
 }
 
 type businessListResponse struct {
-	Data     []businessResponse `json:"data"`
+	Items    []businessResponse `json:"items"`
 	Page     int                `json:"page"`
 	PageSize int                `json:"page_size"`
 	Total    int64              `json:"total"`
@@ -119,15 +119,15 @@ func toBusinessResponse(b *Business) businessResponse {
 // @Accept json
 // @Produce json
 // @Param request body businessRequest true "Business details"
-// @Success 201 {object} businessResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
+// @Success 201 {object} httpserver.Response{data=businessResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
 // @Router /businesses [post]
 func (h *Handler) CreateBusiness(c *gin.Context) {
 	var req businessRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (h *Handler) CreateBusiness(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusCreated, toBusinessResponse(b))
+	httpserver.JSON(c, http.StatusCreated, "business created successfully", toBusinessResponse(b))
 }
 
 // GetBusiness godoc
@@ -146,9 +146,9 @@ func (h *Handler) CreateBusiness(c *gin.Context) {
 // @Tags businesses
 // @Produce json
 // @Param businessId path string true "Business ID"
-// @Success 200 {object} businessResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=businessResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /businesses/{businessId} [get]
 func (h *Handler) GetBusiness(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "businessId")
@@ -160,7 +160,7 @@ func (h *Handler) GetBusiness(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toBusinessResponse(b))
+	httpserver.JSON(c, http.StatusOK, "business retrieved successfully", toBusinessResponse(b))
 }
 
 // ListBusinesses godoc
@@ -169,7 +169,7 @@ func (h *Handler) GetBusiness(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Items per page (max 100)" default(20)
-// @Success 200 {object} businessListResponse
+// @Success 200 {object} httpserver.Response{data=businessListResponse}
 // @Router /businesses [get]
 func (h *Handler) ListBusinesses(c *gin.Context) {
 	p := httpserver.ParsePagination(c)
@@ -182,7 +182,9 @@ func (h *Handler) ListBusinesses(c *gin.Context) {
 	for i := range items {
 		data = append(data, toBusinessResponse(&items[i]))
 	}
-	c.JSON(http.StatusOK, businessListResponse{Data: data, Page: p.Page, PageSize: p.PageSize, Total: total})
+	httpserver.JSON(c, http.StatusOK, "businesses retrieved successfully", businessListResponse{
+		Items: data, Page: p.Page, PageSize: p.PageSize, Total: total,
+	})
 }
 
 // UpdateBusiness godoc
@@ -194,11 +196,11 @@ func (h *Handler) ListBusinesses(c *gin.Context) {
 // @Produce json
 // @Param businessId path string true "Business ID"
 // @Param request body businessRequest true "Business details"
-// @Success 200 {object} businessResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=businessResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /businesses/{businessId} [put]
 func (h *Handler) UpdateBusiness(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "businessId")
@@ -207,7 +209,7 @@ func (h *Handler) UpdateBusiness(c *gin.Context) {
 	}
 	var req businessRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 	b, err := h.catalog.UpdateBusiness(c.Request.Context(), id, currentUserID(c), isSuperadmin(c), UpdateBusinessInput{
@@ -217,7 +219,7 @@ func (h *Handler) UpdateBusiness(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toBusinessResponse(b))
+	httpserver.JSON(c, http.StatusOK, "business updated successfully", toBusinessResponse(b))
 }
 
 // DeleteBusiness godoc
@@ -225,12 +227,13 @@ func (h *Handler) UpdateBusiness(c *gin.Context) {
 // @Description Cascades to delete its resources and services. Only the owner or a superadmin may delete it.
 // @Tags businesses
 // @Security BearerAuth
+// @Produce json
 // @Param businessId path string true "Business ID"
-// @Success 204 "no content"
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=object}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /businesses/{businessId} [delete]
 func (h *Handler) DeleteBusiness(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "businessId")
@@ -241,7 +244,7 @@ func (h *Handler) DeleteBusiness(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
+	httpserver.JSON(c, http.StatusOK, "business deleted successfully", nil)
 }
 
 // --- resource ---
@@ -261,7 +264,7 @@ type resourceResponse struct {
 }
 
 type resourceListResponse struct {
-	Data     []resourceResponse `json:"data"`
+	Items    []resourceResponse `json:"items"`
 	Page     int                `json:"page"`
 	PageSize int                `json:"page_size"`
 	Total    int64              `json:"total"`
@@ -286,11 +289,11 @@ func toResourceResponse(r *Resource) resourceResponse {
 // @Produce json
 // @Param businessId path string true "Business ID"
 // @Param request body resourceRequest true "Resource details"
-// @Success 201 {object} resourceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 201 {object} httpserver.Response{data=resourceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /businesses/{businessId}/resources [post]
 func (h *Handler) CreateResource(c *gin.Context) {
 	businessID, ok := parseUUIDParam(c, "businessId")
@@ -299,7 +302,7 @@ func (h *Handler) CreateResource(c *gin.Context) {
 	}
 	var req resourceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 	r, err := h.catalog.CreateResource(c.Request.Context(), businessID, currentUserID(c), isSuperadmin(c), CreateResourceInput{
@@ -309,7 +312,7 @@ func (h *Handler) CreateResource(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusCreated, toResourceResponse(r))
+	httpserver.JSON(c, http.StatusCreated, "resource created successfully", toResourceResponse(r))
 }
 
 // GetResource godoc
@@ -317,9 +320,9 @@ func (h *Handler) CreateResource(c *gin.Context) {
 // @Tags resources
 // @Produce json
 // @Param resourceId path string true "Resource ID"
-// @Success 200 {object} resourceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=resourceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /resources/{resourceId} [get]
 func (h *Handler) GetResource(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "resourceId")
@@ -331,7 +334,7 @@ func (h *Handler) GetResource(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toResourceResponse(r))
+	httpserver.JSON(c, http.StatusOK, "resource retrieved successfully", toResourceResponse(r))
 }
 
 // ListResources godoc
@@ -341,7 +344,7 @@ func (h *Handler) GetResource(c *gin.Context) {
 // @Param businessId path string true "Business ID"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Items per page (max 100)" default(20)
-// @Success 200 {object} resourceListResponse
+// @Success 200 {object} httpserver.Response{data=resourceListResponse}
 // @Router /businesses/{businessId}/resources [get]
 func (h *Handler) ListResources(c *gin.Context) {
 	businessID, ok := parseUUIDParam(c, "businessId")
@@ -358,7 +361,9 @@ func (h *Handler) ListResources(c *gin.Context) {
 	for i := range items {
 		data = append(data, toResourceResponse(&items[i]))
 	}
-	c.JSON(http.StatusOK, resourceListResponse{Data: data, Page: p.Page, PageSize: p.PageSize, Total: total})
+	httpserver.JSON(c, http.StatusOK, "resources retrieved successfully", resourceListResponse{
+		Items: data, Page: p.Page, PageSize: p.PageSize, Total: total,
+	})
 }
 
 // UpdateResource godoc
@@ -370,11 +375,11 @@ func (h *Handler) ListResources(c *gin.Context) {
 // @Produce json
 // @Param resourceId path string true "Resource ID"
 // @Param request body resourceRequest true "Resource details"
-// @Success 200 {object} resourceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=resourceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /resources/{resourceId} [put]
 func (h *Handler) UpdateResource(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "resourceId")
@@ -383,7 +388,7 @@ func (h *Handler) UpdateResource(c *gin.Context) {
 	}
 	var req resourceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 	r, err := h.catalog.UpdateResource(c.Request.Context(), id, currentUserID(c), isSuperadmin(c), UpdateResourceInput{
@@ -393,7 +398,7 @@ func (h *Handler) UpdateResource(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toResourceResponse(r))
+	httpserver.JSON(c, http.StatusOK, "resource updated successfully", toResourceResponse(r))
 }
 
 // DeleteResource godoc
@@ -401,12 +406,13 @@ func (h *Handler) UpdateResource(c *gin.Context) {
 // @Description Cascades to delete its services. Requires ownership of the parent business (or superadmin).
 // @Tags resources
 // @Security BearerAuth
+// @Produce json
 // @Param resourceId path string true "Resource ID"
-// @Success 204 "no content"
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=object}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /resources/{resourceId} [delete]
 func (h *Handler) DeleteResource(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "resourceId")
@@ -417,7 +423,7 @@ func (h *Handler) DeleteResource(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
+	httpserver.JSON(c, http.StatusOK, "resource deleted successfully", nil)
 }
 
 // --- service (offering) ---
@@ -441,7 +447,7 @@ type serviceResponse struct {
 }
 
 type serviceListResponse struct {
-	Data     []serviceResponse `json:"data"`
+	Items    []serviceResponse `json:"items"`
 	Page     int               `json:"page"`
 	PageSize int               `json:"page_size"`
 	Total    int64             `json:"total"`
@@ -468,11 +474,11 @@ func toServiceResponse(s *Service) serviceResponse {
 // @Produce json
 // @Param resourceId path string true "Resource ID"
 // @Param request body serviceRequest true "Service details"
-// @Success 201 {object} serviceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 201 {object} httpserver.Response{data=serviceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /resources/{resourceId}/services [post]
 func (h *Handler) CreateService(c *gin.Context) {
 	resourceID, ok := parseUUIDParam(c, "resourceId")
@@ -481,7 +487,7 @@ func (h *Handler) CreateService(c *gin.Context) {
 	}
 	var req serviceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 	if req.Currency == "" {
@@ -495,7 +501,7 @@ func (h *Handler) CreateService(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusCreated, toServiceResponse(s))
+	httpserver.JSON(c, http.StatusCreated, "service created successfully", toServiceResponse(s))
 }
 
 // GetService godoc
@@ -503,9 +509,9 @@ func (h *Handler) CreateService(c *gin.Context) {
 // @Tags services
 // @Produce json
 // @Param serviceId path string true "Service ID"
-// @Success 200 {object} serviceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=serviceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /services/{serviceId} [get]
 func (h *Handler) GetService(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "serviceId")
@@ -517,7 +523,7 @@ func (h *Handler) GetService(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toServiceResponse(s))
+	httpserver.JSON(c, http.StatusOK, "service retrieved successfully", toServiceResponse(s))
 }
 
 // ListServices godoc
@@ -527,7 +533,7 @@ func (h *Handler) GetService(c *gin.Context) {
 // @Param resourceId path string true "Resource ID"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Items per page (max 100)" default(20)
-// @Success 200 {object} serviceListResponse
+// @Success 200 {object} httpserver.Response{data=serviceListResponse}
 // @Router /resources/{resourceId}/services [get]
 func (h *Handler) ListServices(c *gin.Context) {
 	resourceID, ok := parseUUIDParam(c, "resourceId")
@@ -544,7 +550,9 @@ func (h *Handler) ListServices(c *gin.Context) {
 	for i := range items {
 		data = append(data, toServiceResponse(&items[i]))
 	}
-	c.JSON(http.StatusOK, serviceListResponse{Data: data, Page: p.Page, PageSize: p.PageSize, Total: total})
+	httpserver.JSON(c, http.StatusOK, "services retrieved successfully", serviceListResponse{
+		Items: data, Page: p.Page, PageSize: p.PageSize, Total: total,
+	})
 }
 
 // UpdateService godoc
@@ -556,11 +564,11 @@ func (h *Handler) ListServices(c *gin.Context) {
 // @Produce json
 // @Param serviceId path string true "Service ID"
 // @Param request body serviceRequest true "Service details"
-// @Success 200 {object} serviceResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=serviceResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /services/{serviceId} [put]
 func (h *Handler) UpdateService(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "serviceId")
@@ -569,7 +577,7 @@ func (h *Handler) UpdateService(c *gin.Context) {
 	}
 	var req serviceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 	if req.Currency == "" {
@@ -583,7 +591,7 @@ func (h *Handler) UpdateService(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, toServiceResponse(s))
+	httpserver.JSON(c, http.StatusOK, "service updated successfully", toServiceResponse(s))
 }
 
 // DeleteService godoc
@@ -591,12 +599,13 @@ func (h *Handler) UpdateService(c *gin.Context) {
 // @Description Requires ownership of the parent business (or superadmin).
 // @Tags services
 // @Security BearerAuth
+// @Produce json
 // @Param serviceId path string true "Service ID"
-// @Success 204 "no content"
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse
-// @Failure 403 {object} httpserver.ErrorResponse
-// @Failure 404 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=object}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object}
+// @Failure 403 {object} httpserver.Response{data=object}
+// @Failure 404 {object} httpserver.Response{data=object}
 // @Router /services/{serviceId} [delete]
 func (h *Handler) DeleteService(c *gin.Context) {
 	id, ok := parseUUIDParam(c, "serviceId")
@@ -607,5 +616,5 @@ func (h *Handler) DeleteService(c *gin.Context) {
 		handleCatalogError(c, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
+	httpserver.JSON(c, http.StatusOK, "service deleted successfully", nil)
 }

@@ -22,19 +22,15 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	r.GET("/health/ready", h.Ready)
 }
 
-type statusResponse struct {
-	Status string `json:"status" example:"ok"`
-}
-
 // Live godoc
 // @Summary Liveness probe
 // @Description Reports whether the process is up, without checking dependencies.
 // @Tags health
 // @Produce json
-// @Success 200 {object} statusResponse
+// @Success 200 {object} httpserver.Response{data=object}
 // @Router /health/live [get]
 func (h *Handler) Live(c *gin.Context) {
-	c.JSON(http.StatusOK, statusResponse{Status: "ok"})
+	httpserver.JSON(c, http.StatusOK, "service is up", nil)
 }
 
 // Ready godoc
@@ -42,20 +38,20 @@ func (h *Handler) Live(c *gin.Context) {
 // @Description Reports whether the service can serve traffic, including database connectivity.
 // @Tags health
 // @Produce json
-// @Success 200 {object} statusResponse
-// @Failure 503 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=object}
+// @Failure 503 {object} httpserver.Response{data=object}
 // @Router /health/ready [get]
 func (h *Handler) Ready(c *gin.Context) {
 	sqlDB, err := h.db.DB()
 	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusServiceUnavailable, err.Error(), nil)
 		return
 	}
 
 	if err := sqlDB.PingContext(c.Request.Context()); err != nil {
-		c.JSON(http.StatusServiceUnavailable, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusServiceUnavailable, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{Status: "ok"})
+	httpserver.JSON(c, http.StatusOK, "service is ready", nil)
 }

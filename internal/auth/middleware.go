@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/domibowo/booking-systems/internal/platform/httpserver"
 )
 
 const (
@@ -19,13 +21,15 @@ func (h *Handler) RequireAuth() gin.HandlerFunc {
 		header := c.GetHeader("Authorization")
 		token, ok := strings.CutPrefix(header, "Bearer ")
 		if !ok || token == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+			httpserver.JSON(c, http.StatusUnauthorized, "missing bearer token", nil)
+			c.Abort()
 			return
 		}
 
 		claims, err := h.service.ParseAccessToken(token)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
+			httpserver.JSON(c, http.StatusUnauthorized, "invalid or expired token", nil)
+			c.Abort()
 			return
 		}
 
@@ -47,7 +51,8 @@ func RequireRole(roles ...Role) gin.HandlerFunc {
 		role, _ := c.Get(ContextUserRoleKey)
 		r, _ := role.(Role)
 		if _, ok := allowed[r]; !ok {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "insufficient permissions"})
+			httpserver.JSON(c, http.StatusForbidden, "insufficient permissions", nil)
+			c.Abort()
 			return
 		}
 		c.Next()

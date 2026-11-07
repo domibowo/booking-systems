@@ -77,28 +77,28 @@ func toAuthResponse(result *AuthResult) authResponse {
 // @Accept json
 // @Produce json
 // @Param request body registerRequest true "Registration details"
-// @Success 201 {object} authResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 409 {object} httpserver.ErrorResponse "email already registered"
+// @Success 201 {object} httpserver.Response{data=authResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 409 {object} httpserver.Response{data=object} "email already registered"
 // @Router /auth/register [post]
 func (h *Handler) Register(c *gin.Context) {
 	var req registerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	result, err := h.service.Register(c.Request.Context(), req.Email, req.Password, req.FullName)
 	if err != nil {
 		if errors.Is(err, ErrEmailTaken) {
-			c.JSON(http.StatusConflict, httpserver.ErrorResponse{Error: "email already registered"})
+			httpserver.JSON(c, http.StatusConflict, "email already registered", nil)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, httpserver.ErrorResponse{Error: "failed to register"})
+		httpserver.JSON(c, http.StatusInternalServerError, "failed to register", nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, toAuthResponse(result))
+	httpserver.JSON(c, http.StatusCreated, "user registered successfully", toAuthResponse(result))
 }
 
 // Login godoc
@@ -107,28 +107,28 @@ func (h *Handler) Register(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body loginRequest true "Credentials"
-// @Success 200 {object} authResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse "invalid email or password"
+// @Success 200 {object} httpserver.Response{data=authResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object} "invalid email or password"
 // @Router /auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var req loginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	result, err := h.service.Login(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
-			c.JSON(http.StatusUnauthorized, httpserver.ErrorResponse{Error: "invalid email or password"})
+			httpserver.JSON(c, http.StatusUnauthorized, "invalid email or password", nil)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, httpserver.ErrorResponse{Error: "failed to login"})
+		httpserver.JSON(c, http.StatusInternalServerError, "failed to login", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, toAuthResponse(result))
+	httpserver.JSON(c, http.StatusOK, "login successful", toAuthResponse(result))
 }
 
 // Refresh godoc
@@ -138,28 +138,28 @@ func (h *Handler) Login(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body refreshRequest true "Refresh token"
-// @Success 200 {object} authResponse
-// @Failure 400 {object} httpserver.ErrorResponse
-// @Failure 401 {object} httpserver.ErrorResponse "invalid or expired refresh token"
+// @Success 200 {object} httpserver.Response{data=authResponse}
+// @Failure 400 {object} httpserver.Response{data=object}
+// @Failure 401 {object} httpserver.Response{data=object} "invalid or expired refresh token"
 // @Router /auth/refresh [post]
 func (h *Handler) Refresh(c *gin.Context) {
 	var req refreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	result, err := h.service.Refresh(c.Request.Context(), req.RefreshToken)
 	if err != nil {
 		if errors.Is(err, ErrInvalidToken) {
-			c.JSON(http.StatusUnauthorized, httpserver.ErrorResponse{Error: "invalid or expired refresh token"})
+			httpserver.JSON(c, http.StatusUnauthorized, "invalid or expired refresh token", nil)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, httpserver.ErrorResponse{Error: "failed to refresh token"})
+		httpserver.JSON(c, http.StatusInternalServerError, "failed to refresh token", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, toAuthResponse(result))
+	httpserver.JSON(c, http.StatusOK, "token refreshed successfully", toAuthResponse(result))
 }
 
 // Logout godoc
@@ -168,20 +168,20 @@ func (h *Handler) Refresh(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body refreshRequest true "Refresh token"
-// @Success 204 "no content"
-// @Failure 400 {object} httpserver.ErrorResponse
+// @Success 200 {object} httpserver.Response{data=object}
+// @Failure 400 {object} httpserver.Response{data=object}
 // @Router /auth/logout [post]
 func (h *Handler) Logout(c *gin.Context) {
 	var req refreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, httpserver.ErrorResponse{Error: err.Error()})
+		httpserver.JSON(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	if err := h.service.Logout(c.Request.Context(), req.RefreshToken); err != nil {
-		c.JSON(http.StatusInternalServerError, httpserver.ErrorResponse{Error: "failed to logout"})
+		httpserver.JSON(c, http.StatusInternalServerError, "failed to logout", nil)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	httpserver.JSON(c, http.StatusOK, "logged out successfully", nil)
 }

@@ -1,9 +1,14 @@
 basePath: /
 definitions:
-  github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse:
+  github_com_domibowo_booking-systems_internal_platform_httpserver.Response:
     properties:
-      error:
+      data: {}
+      message:
+        example: success
         type: string
+      status:
+        example: 200
+        type: integer
     type: object
   internal_auth.authResponse:
     properties:
@@ -64,7 +69,7 @@ definitions:
     type: object
   internal_catalog.businessListResponse:
     properties:
-      data:
+      items:
         items:
           $ref: '#/definitions/internal_catalog.businessResponse'
         type: array
@@ -109,7 +114,7 @@ definitions:
     type: object
   internal_catalog.resourceListResponse:
     properties:
-      data:
+      items:
         items:
           $ref: '#/definitions/internal_catalog.resourceResponse'
         type: array
@@ -150,7 +155,7 @@ definitions:
     type: object
   internal_catalog.serviceListResponse:
     properties:
-      data:
+      items:
         items:
           $ref: '#/definitions/internal_catalog.serviceResponse'
         type: array
@@ -201,12 +206,6 @@ definitions:
       resource_id:
         type: string
     type: object
-  internal_health.statusResponse:
-    properties:
-      status:
-        example: ok
-        type: string
-    type: object
 info:
   contact: {}
   description: Backend REST API for a booking system — portfolio project and a refresher
@@ -231,15 +230,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_auth.authResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_auth.authResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: invalid email or password
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Log in with email and password
       tags:
       - auth
@@ -257,12 +271,24 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: no content
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Revoke a refresh token
       tags:
       - auth
@@ -285,15 +311,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_auth.authResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_auth.authResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: invalid or expired refresh token
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Rotate a refresh token for a new access/refresh token pair
       tags:
       - auth
@@ -316,15 +357,30 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_auth.authResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_auth.authResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "409":
           description: email already registered
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Register a new user
       tags:
       - auth
@@ -347,7 +403,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.businessListResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.businessListResponse'
+              type: object
       summary: List businesses
       tags:
       - businesses
@@ -369,19 +430,39 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_catalog.businessResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.businessResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Create a business (venue)
@@ -397,25 +478,54 @@ paths:
         name: businessId
         required: true
         type: string
+      produces:
+      - application/json
       responses:
-        "204":
-          description: no content
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Delete a business
@@ -434,15 +544,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.businessResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.businessResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Get a business by ID
       tags:
       - businesses
@@ -468,23 +593,48 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.businessResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.businessResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Update a business
@@ -514,7 +664,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.resourceListResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.resourceListResponse'
+              type: object
       summary: List resources under a business
       tags:
       - resources
@@ -540,23 +695,48 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_catalog.resourceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.resourceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Create a resource under a business
@@ -571,7 +751,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_health.statusResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Liveness probe
       tags:
       - health
@@ -585,11 +770,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_health.statusResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Readiness probe
       tags:
       - health
@@ -603,25 +798,54 @@ paths:
         name: resourceId
         required: true
         type: string
+      produces:
+      - application/json
       responses:
-        "204":
-          description: no content
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Delete a resource
@@ -640,15 +864,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.resourceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.resourceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Get a resource by ID
       tags:
       - resources
@@ -674,23 +913,48 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.resourceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.resourceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Update a resource
@@ -720,7 +984,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.serviceListResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.serviceListResponse'
+              type: object
       summary: List services under a resource
       tags:
       - services
@@ -747,23 +1016,48 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_catalog.serviceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.serviceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Create a service (bookable offering) under a resource
@@ -778,25 +1072,54 @@ paths:
         name: serviceId
         required: true
         type: string
+      produces:
+      - application/json
       responses:
-        "204":
-          description: no content
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Delete a service
@@ -815,15 +1138,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.serviceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.serviceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Get a service by ID
       tags:
       - services
@@ -849,23 +1187,48 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_catalog.serviceResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_catalog.serviceResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
       security:
       - BearerAuth: []
       summary: Update a service
