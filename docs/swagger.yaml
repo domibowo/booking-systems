@@ -1,0 +1,881 @@
+basePath: /
+definitions:
+  github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  internal_auth.authResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/internal_auth.userResponse'
+    type: object
+  internal_auth.loginRequest:
+    properties:
+      email:
+        example: customer@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  internal_auth.refreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  internal_auth.registerRequest:
+    properties:
+      email:
+        example: customer@example.com
+        type: string
+      full_name:
+        example: Jane Doe
+        type: string
+      password:
+        example: password123
+        minLength: 8
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    type: object
+  internal_auth.userResponse:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      role:
+        example: customer
+        type: string
+    type: object
+  internal_catalog.businessListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_catalog.businessResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_catalog.businessRequest:
+    properties:
+      address:
+        example: Jl. Merdeka 1
+        type: string
+      description:
+        example: Lapangan futsal indoor
+        type: string
+      name:
+        example: Lapangan Jaya
+        type: string
+      phone:
+        example: "08123456789"
+        type: string
+    required:
+    - name
+    type: object
+  internal_catalog.businessResponse:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      phone:
+        type: string
+    type: object
+  internal_catalog.resourceListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_catalog.resourceResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_catalog.resourceRequest:
+    properties:
+      description:
+        example: Lapangan indoor dengan lantai vinyl
+        type: string
+      name:
+        example: Lapangan A
+        type: string
+      type:
+        example: lapangan
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  internal_catalog.resourceResponse:
+    properties:
+      business_id:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  internal_catalog.serviceListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_catalog.serviceResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_catalog.serviceRequest:
+    properties:
+      currency:
+        example: IDR
+        type: string
+      description:
+        example: Sewa lapangan selama 1 jam
+        type: string
+      duration_minutes:
+        example: 60
+        minimum: 1
+        type: integer
+      name:
+        example: Sewa 1 jam
+        type: string
+      price_cents:
+        example: 15000000
+        minimum: 0
+        type: integer
+    required:
+    - duration_minutes
+    - name
+    type: object
+  internal_catalog.serviceResponse:
+    properties:
+      currency:
+        type: string
+      description:
+        type: string
+      duration_minutes:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      price_cents:
+        type: integer
+      resource_id:
+        type: string
+    type: object
+  internal_health.statusResponse:
+    properties:
+      status:
+        example: ok
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Backend REST API for a booking system — portfolio project and a refresher
+    on Go backend architecture.
+  title: Booking Systems API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_auth.authResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: invalid email or password
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Log in with email and password
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.refreshRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: no content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Revoke a refresh token
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: The supplied refresh token is revoked as part of rotation; reusing
+        it afterwards fails.
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.refreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_auth.authResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: invalid or expired refresh token
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Rotate a refresh token for a new access/refresh token pair
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a user with the "customer" role and returns an access/refresh
+        token pair.
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_auth.authResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "409":
+          description: email already registered
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /businesses:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.businessListResponse'
+      summary: List businesses
+      tags:
+      - businesses
+    post:
+      consumes:
+      - application/json
+      description: Requires the "owner" or "superadmin" role. The authenticated user
+        becomes the owner.
+      parameters:
+      - description: Business details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.businessRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_catalog.businessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a business (venue)
+      tags:
+      - businesses
+  /businesses/{businessId}:
+    delete:
+      description: Cascades to delete its resources and services. Only the owner or
+        a superadmin may delete it.
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: no content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a business
+      tags:
+      - businesses
+    get:
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.businessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Get a business by ID
+      tags:
+      - businesses
+    put:
+      consumes:
+      - application/json
+      description: Only the business owner or a superadmin may update it.
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Business details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.businessRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.businessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a business
+      tags:
+      - businesses
+  /businesses/{businessId}/resources:
+    get:
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.resourceListResponse'
+      summary: List resources under a business
+      tags:
+      - resources
+    post:
+      consumes:
+      - application/json
+      description: Requires ownership of the parent business (or superadmin).
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Resource details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.resourceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_catalog.resourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a resource under a business
+      tags:
+      - resources
+  /health/live:
+    get:
+      description: Reports whether the process is up, without checking dependencies.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_health.statusResponse'
+      summary: Liveness probe
+      tags:
+      - health
+  /health/ready:
+    get:
+      description: Reports whether the service can serve traffic, including database
+        connectivity.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_health.statusResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Readiness probe
+      tags:
+      - health
+  /resources/{resourceId}:
+    delete:
+      description: Cascades to delete its services. Requires ownership of the parent
+        business (or superadmin).
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: no content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a resource
+      tags:
+      - resources
+    get:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.resourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Get a resource by ID
+      tags:
+      - resources
+    put:
+      consumes:
+      - application/json
+      description: Requires ownership of the parent business (or superadmin).
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Resource details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.resourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.resourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a resource
+      tags:
+      - resources
+  /resources/{resourceId}/services:
+    get:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.serviceListResponse'
+      summary: List services under a resource
+      tags:
+      - services
+    post:
+      consumes:
+      - application/json
+      description: Price is in integer cents to avoid floating point issues. Requires
+        ownership of the parent business (or superadmin).
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Service details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.serviceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_catalog.serviceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a service (bookable offering) under a resource
+      tags:
+      - services
+  /services/{serviceId}:
+    delete:
+      description: Requires ownership of the parent business (or superadmin).
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: no content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a service
+      tags:
+      - services
+    get:
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.serviceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      summary: Get a service by ID
+      tags:
+      - services
+    put:
+      consumes:
+      - application/json
+      description: Requires ownership of the parent business (or superadmin).
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Service details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_catalog.serviceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_catalog.serviceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a service
+      tags:
+      - services
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and the access token, e.g. "Bearer
+      eyJhbGci...".
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
