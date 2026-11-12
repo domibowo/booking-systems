@@ -11,11 +11,13 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/domibowo/booking-systems/internal/auth"
+	"github.com/domibowo/booking-systems/internal/booking"
 	"github.com/domibowo/booking-systems/internal/catalog"
 	"github.com/domibowo/booking-systems/internal/health"
 	"github.com/domibowo/booking-systems/internal/platform/config"
 	"github.com/domibowo/booking-systems/internal/platform/database"
 	"github.com/domibowo/booking-systems/internal/platform/httpserver"
+	"github.com/domibowo/booking-systems/internal/schedule"
 
 	_ "github.com/domibowo/booking-systems/docs"
 )
@@ -47,8 +49,15 @@ func main() {
 	if err := db.AutoMigrate(
 		&auth.User{}, &auth.RefreshToken{},
 		&catalog.Business{}, &catalog.Resource{}, &catalog.Service{},
+		&schedule.WeeklyHours{}, &schedule.ScheduleException{}, &schedule.ScheduleSettings{},
+		&booking.Booking{},
 	); err != nil {
 		slog.Error("database migration failed", "error", err)
+		os.Exit(1)
+	}
+
+	if err := booking.EnsureSchema(db); err != nil {
+		slog.Error("booking schema setup failed", "error", err)
 		os.Exit(1)
 	}
 
@@ -68,12 +77,35 @@ func main() {
 	authHandler := auth.NewHandler(authService)
 	authHandler.RegisterRoutes(router)
 
-	catalogHandler := catalog.NewHandler(catalog.NewCatalog(
+	catalogService := catalog.NewCatalog(
 		catalog.NewGormBusinessRepository(db),
 		catalog.NewGormResourceRepository(db),
 		catalog.NewGormServiceRepository(db),
-	))
+	)
+	catalogHandler := catalog.NewHandler(catalogService)
 	catalogHandler.RegisterRoutes(router, authHandler.RequireAuth(), auth.RequireRole(auth.RoleOwner, auth.RoleSuperadmin))
+
+	scheduleService := schedule.NewSchedule(
+		schedule.NewGormWeeklyHoursRepository(db),
+		schedule.NewGormExceptionRepository(db),
+		schedule.NewGormSettingsRepository(db),
+		catalogService,
+		catalogService,
+		catalogService,
+	)
+	scheduleHandler := schedule.NewHandler(scheduleService)
+	scheduleHandler.RegisterRoutes(router, authHandler.RequireAuth(), auth.RequireRole(auth.RoleOwner, auth.RoleSuperadmin))
+
+	bookingHandler := booking.NewHandler(booking.NewBookings(
+		booking.NewGormRepository(db),
+		catalogService,
+		catalogService,
+		catalogService,
+		catalogService,
+		scheduleService,
+		cfg.BookingHoldDuration,
+	))
+	bookingHandler.RegisterRoutes(router, authHandler.RequireAuth(), auth.RequireRole(auth.RoleOwner, auth.RoleSuperadmin))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

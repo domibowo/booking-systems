@@ -216,6 +216,22 @@ func (c *Catalog) ensureResourceOwner(ctx context.Context, resourceID, userID uu
 	return r, nil
 }
 
+// CheckResourceOwnership lets other modules (e.g. schedule, booking) reuse
+// this module's ownership chain (resource -> business -> owner) without
+// duplicating it.
+func (c *Catalog) CheckResourceOwnership(ctx context.Context, resourceID, userID uuid.UUID, isSuperadmin bool) error {
+	_, err := c.ensureResourceOwner(ctx, resourceID, userID, isSuperadmin)
+	return err
+}
+
+// CheckBusinessOwnership is the business-level counterpart, for modules
+// (e.g. booking's owner-scoped list) that are scoped by business rather
+// than by resource.
+func (c *Catalog) CheckBusinessOwnership(ctx context.Context, businessID, userID uuid.UUID, isSuperadmin bool) error {
+	_, err := c.ensureBusinessOwner(ctx, businessID, userID, isSuperadmin)
+	return err
+}
+
 // --- service (offering) ---
 
 func (c *Catalog) CreateService(ctx context.Context, resourceID, userID uuid.UUID, isSuperadmin bool, in CreateServiceInput) (*Service, error) {

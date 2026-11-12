@@ -17,6 +17,8 @@ type Config struct {
 	JWTSecret       string
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
+
+	BookingHoldDuration time.Duration
 }
 
 func Load() (*Config, error) {
@@ -32,6 +34,11 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("config: invalid REFRESH_TOKEN_TTL: %w", err)
 	}
 
+	bookingHoldDuration, err := time.ParseDuration(getEnv("BOOKING_HOLD_DURATION", "15m"))
+	if err != nil {
+		return nil, fmt.Errorf("config: invalid BOOKING_HOLD_DURATION: %w", err)
+	}
+
 	cfg := &Config{
 		AppEnv:      getEnv("APP_ENV", "development"),
 		AppPort:     getEnv("APP_PORT", "8080"),
@@ -41,6 +48,8 @@ func Load() (*Config, error) {
 		JWTSecret:       os.Getenv("JWT_SECRET"),
 		AccessTokenTTL:  accessTTL,
 		RefreshTokenTTL: refreshTTL,
+
+		BookingHoldDuration: bookingHoldDuration,
 	}
 
 	if cfg.DatabaseURL == "" {

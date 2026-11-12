@@ -67,6 +67,86 @@ definitions:
         example: customer
         type: string
     type: object
+  internal_booking.availabilityResponse:
+    properties:
+      date:
+        type: string
+      resource_id:
+        type: string
+      service_id:
+        type: string
+      slots:
+        items:
+          $ref: '#/definitions/internal_booking.slotResponse'
+        type: array
+      timezone:
+        type: string
+    type: object
+  internal_booking.bookingListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_booking.bookingResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_booking.bookingResponse:
+    properties:
+      business_id:
+        type: string
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      end_at:
+        type: string
+      hold_expires_at:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+      resource_id:
+        type: string
+      service_id:
+        type: string
+      start_at:
+        type: string
+      status:
+        example: pending
+        type: string
+    type: object
+  internal_booking.createRequest:
+    properties:
+      notes:
+        example: Tolong siapkan 2 raket
+        type: string
+      resource_id:
+        example: a8ba1de4-a497-42d1-8d70-63fd323505d5
+        type: string
+      service_id:
+        example: f22b9716-dd01-448f-8419-6c7051d431f5
+        type: string
+      start_at:
+        example: "2026-11-16T09:00:00Z"
+        type: string
+    required:
+    - resource_id
+    - service_id
+    - start_at
+    type: object
+  internal_booking.slotResponse:
+    properties:
+      end_at:
+        type: string
+      start_at:
+        type: string
+    type: object
   internal_catalog.businessListResponse:
     properties:
       items:
@@ -205,6 +285,134 @@ definitions:
         type: integer
       resource_id:
         type: string
+    type: object
+  internal_schedule.availabilityResponse:
+    properties:
+      date:
+        type: string
+      resource_id:
+        type: string
+      service_id:
+        type: string
+      slots:
+        items:
+          $ref: '#/definitions/internal_schedule.slotResponse'
+        type: array
+      timezone:
+        type: string
+    type: object
+  internal_schedule.dayInput:
+    properties:
+      close_time:
+        example: "17:00"
+        type: string
+      is_closed:
+        type: boolean
+      open_time:
+        example: "09:00"
+        type: string
+      weekday:
+        example: 1
+        maximum: 6
+        minimum: 0
+        type: integer
+    type: object
+  internal_schedule.exceptionListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_schedule.exceptionResponse'
+        type: array
+    type: object
+  internal_schedule.exceptionRequest:
+    properties:
+      close_time:
+        example: "13:00"
+        type: string
+      date:
+        example: "2026-12-25"
+        type: string
+      is_closed:
+        example: true
+        type: boolean
+      open_time:
+        example: "09:00"
+        type: string
+      reason:
+        example: Libur Nasional
+        type: string
+    required:
+    - date
+    type: object
+  internal_schedule.exceptionResponse:
+    properties:
+      close_time:
+        type: string
+      date:
+        type: string
+      id:
+        type: string
+      is_closed:
+        type: boolean
+      open_time:
+        type: string
+      reason:
+        type: string
+    type: object
+  internal_schedule.settingsRequest:
+    properties:
+      buffer_minutes:
+        example: 15
+        minimum: 0
+        type: integer
+      timezone:
+        example: Asia/Jakarta
+        type: string
+    required:
+    - timezone
+    type: object
+  internal_schedule.settingsResponse:
+    properties:
+      buffer_minutes:
+        type: integer
+      resource_id:
+        type: string
+      timezone:
+        type: string
+    type: object
+  internal_schedule.slotResponse:
+    properties:
+      end_at:
+        type: string
+      start_at:
+        type: string
+    type: object
+  internal_schedule.weeklyHoursListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_schedule.weeklyHoursResponse'
+        type: array
+    type: object
+  internal_schedule.weeklyHoursRequest:
+    properties:
+      days:
+        items:
+          $ref: '#/definitions/internal_schedule.dayInput'
+        type: array
+    required:
+    - days
+    type: object
+  internal_schedule.weeklyHoursResponse:
+    properties:
+      close_time:
+        type: string
+      is_closed:
+        type: boolean
+      open_time:
+        type: string
+      weekday:
+        type: integer
     type: object
 info:
   contact: {}
@@ -384,6 +592,440 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /bookings:
+    post:
+      consumes:
+      - application/json
+      description: 'Send an Idempotency-Key header to safely retry: a repeated request
+        with the same key for the same customer returns the original booking instead
+        of creating a duplicate.'
+      parameters:
+      - description: Client-generated key to dedupe retried requests
+        in: header
+        name: Idempotency-Key
+        type: string
+      - description: Booking details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_booking.createRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "409":
+          description: requested time overlaps an existing booking
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Create a booking (places a temporary hold pending payment)
+      tags:
+      - bookings
+  /bookings/{bookingId}:
+    get:
+      description: Visible to the booking's own customer or the resource's business
+        owner/superadmin.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get a booking by ID
+      tags:
+      - bookings
+  /bookings/{bookingId}/cancel:
+    post:
+      description: Allowed for the booking's own customer or the resource's business
+        owner/superadmin.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Cancel a pending or confirmed booking
+      tags:
+      - bookings
+  /bookings/{bookingId}/complete:
+    post:
+      description: Owner-only.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Mark a confirmed booking as completed
+      tags:
+      - bookings
+  /bookings/{bookingId}/confirm:
+    post:
+      description: Owner-only. Stands in for what a payment webhook will trigger once
+        the payment module exists.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Confirm a pending booking
+      tags:
+      - bookings
+  /bookings/{bookingId}/no-show:
+    post:
+      description: Owner-only.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Mark a confirmed booking as a no-show
+      tags:
+      - bookings
+  /bookings/me:
+    get:
+      parameters:
+      - description: Filter by status
+        enum:
+        - pending
+        - confirmed
+        - cancelled
+        - completed
+        - expired
+        - no_show
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingListResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List the authenticated customer's own booking history
+      tags:
+      - bookings
   /businesses:
     get:
       parameters:
@@ -640,6 +1282,92 @@ paths:
       summary: Update a business
       tags:
       - businesses
+  /businesses/{businessId}/bookings:
+    get:
+      description: Owner-only. Requires ownership of the business.
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Filter by resource ID
+        in: query
+        name: resource_id
+        type: string
+      - description: Filter by status
+        enum:
+        - pending
+        - confirmed
+        - cancelled
+        - completed
+        - expired
+        - no_show
+        in: query
+        name: status
+        type: string
+      - description: Start date filter (YYYY-MM-DD)
+        in: query
+        name: from
+        type: string
+      - description: End date filter (YYYY-MM-DD, exclusive)
+        in: query
+        name: to
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.bookingListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List a business's bookings, with optional resource/status/date filters
+      tags:
+      - bookings
   /businesses/{businessId}/resources:
     get:
       parameters:
@@ -960,6 +1688,444 @@ paths:
       summary: Update a resource
       tags:
       - resources
+  /resources/{resourceId}/availability:
+    get:
+      description: Computed from operating hours, exceptions, and the service's duration/buffer.
+        Does not yet exclude existing bookings (no booking module yet).
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Service ID
+        in: query
+        name: service_id
+        required: true
+        type: string
+      - description: Date (YYYY-MM-DD)
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.availabilityResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Check available booking slots for a resource+service on a date
+      tags:
+      - schedule
+  /resources/{resourceId}/bookings/availability:
+    get:
+      description: Unlike /resources/{resourceId}/availability (schedule module),
+        this excludes times already held or booked.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Service ID
+        in: query
+        name: service_id
+        required: true
+        type: string
+      - description: Date (YYYY-MM-DD)
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_booking.availabilityResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Check real-time available booking slots for a resource+service on a
+        date
+      tags:
+      - bookings
+  /resources/{resourceId}/schedule/exceptions:
+    get:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.exceptionListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: List a resource's schedule exceptions
+      tags:
+      - schedule
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Exception details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_schedule.exceptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.exceptionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Add a schedule exception (holiday, closure, or shortened hours) for
+        a specific date
+      tags:
+      - schedule
+  /resources/{resourceId}/schedule/settings:
+    get:
+      description: Returns defaults (Asia/Jakarta, no buffer) if never configured.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.settingsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Get a resource's scheduling settings
+      tags:
+      - schedule
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_schedule.settingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.settingsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Set a resource's scheduling settings (timezone, buffer between bookings)
+      tags:
+      - schedule
+  /resources/{resourceId}/schedule/weekly-hours:
+    get:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.weeklyHoursListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Get a resource's weekly operating hours
+      tags:
+      - schedule
+    put:
+      consumes:
+      - application/json
+      description: Requires exactly one entry per weekday (0=Sunday..6=Saturday).
+        Replaces the full week atomically.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: string
+      - description: Full week of operating hours
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_schedule.weeklyHoursRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_schedule.weeklyHoursListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Replace a resource's weekly operating hours
+      tags:
+      - schedule
   /resources/{resourceId}/services:
     get:
       parameters:
@@ -1063,6 +2229,67 @@ paths:
       summary: Create a service (bookable offering) under a resource
       tags:
       - services
+  /schedule/exceptions/{exceptionId}:
+    delete:
+      parameters:
+      - description: Exception ID
+        in: path
+        name: exceptionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_domibowo_booking-systems_internal_platform_httpserver.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a schedule exception
+      tags:
+      - schedule
   /services/{serviceId}:
     delete:
       description: Requires ownership of the parent business (or superadmin).
